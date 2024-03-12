@@ -1,8 +1,11 @@
 ### WORDPRESS SITE URL CHANGE
-UPDATE wp_options SET option_value = replace(option_value, 'http://13.200.45.193/wordpress', 'http://wp.akashgaur.xyz') WHERE option_name = 'home' OR option_name = 'siteurl';
+UPDATE wp_options SET option_value = replace(option_value, 'http://wp.akashgaur.xyz/wordpress', 'http://word.akashgaur.xyz') WHERE option_name = 'home' OR option_name = 'siteurl';
 
-UPDATE wp_posts SET guid = replace(guid, 'http://13.200.45.193/wordpress','http://wp.akashgaur.xyz');
+UPDATE wp_posts SET guid = replace(guid, 'http://wp.akashgaur.xyz/wordpress','http://word.akashgaur.xyz');
 
-UPDATE wp_posts SET post_content = replace(post_content, 'http://13.200.45.193/wordpress', 'http://wp.akashgaur.xyz');
+UPDATE wp_posts SET post_content = replace(post_content, 'http://wp.akashgaur.xyz/wordpress', 'http://word.akashgaur.xyz');
 
-UPDATE wp_postmeta SET meta_value = replace(meta_value,'http://13.200.45.193/wordpress',  'http://wp.akashgaur.xyz');
+UPDATE wp_postmeta SET meta_value = replace(meta_value,'http://wp.akashgaur.xyz/wordpress',  'http://word.akashgaur.xyz');
+
+(to check old ip of the instance open the site now click on inspect-then network-then refresh it-nowmove cursor to any word line you will get old ip)
+
