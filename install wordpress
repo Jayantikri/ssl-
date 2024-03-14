@@ -1,53 +1,90 @@
+#!/bin/bash
 #install dependencies
-1 installing apache
----
+
+##installing apache
 sudo apt update 
-sudo apt install apache2
-2 install mysql 
-sudo apt install mysql-server
-sudo mysql
-exit
-3 installing php
----
-sudo apt install php libapache2-mod-php php-mysql
-4 configure wordpress user database
----
-CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
----
-CREATE USER 'wordpressuser'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
----
-GRANT ALL ON wordpress.* TO 'wordpressuser'@'%';
----
+sudo apt install apache2 -y
+
+##install mysql 
+sudo apt install mysql-server -y
+
+##installing php
+sudo apt install php libapache2-mod-php php-mysql -y
+##configure wordpress user database
+echo "enter wordpress database"= "$wpdb"
+read $wpdb
+echo "enter wordpress_user name"=""$wpuser
+echo "enter password for user"="$password"
+
+sudo mysql <<EOF
+CREATE DATABASE $wpdb DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+CREATE USER '$wpuser'@'%' IDENTIFIED WITH mysql_native_password BY '$password';
+GRANT ALL ON $wpdb.* TO '$wordpressuser'@'%';
 FLUSH PRIVILEGES;
 exit;
-5 installing additional php extensions---
-sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip
-sudo systemctl restart apache2
-sudo nano /etc/apache2/sites-available/wordpress.conf
+EOF
+
+##installing additional php extensions---
+sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip -y
+
+cat > /etc/apache2/sites-available/wordpress.conf <<EOF
 <VirtualHost *:80>
-. . .
-    <Directory /var/www/wordpress/>
+    DocumentRoot /var/www/html/wordpress
+    <Directory /var/www/html/wordpress/>
         AllowOverride All
     </Directory>
-. . .
 </VirtualHost>
+EOF
 sudo apache2ctl configtest
+sudo systemctl reload apache2
 sudo a2enmod rewrite
+
 #installing wordpress
+
 cd /tmp
 curl -O https://wordpress.org/latest.tar.gz
 tar xzvf latest.tar.gz
 touch /tmp/wordpress/.htaccess
-cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
-mkdir /tmp/wordpress/wp-content/upgrade
+sudo cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
+sudo mkdir /tmp/wordpress/wp-content/upgrade
 sudo cp -a /tmp/wordpress/. /var/www/html/wordpress
 sudo chown -R www-data:www-data /var/www/html/wordpress
 sudo find /var/www/html/wordpress/ -type d -exec chmod 770 {} \;
 sudo find /var/www/html/wordpress/ -type f -exec chmod 664 {} \;
 #setting wordpress config file
-curl -s https://api.wordpress.org/secret-key/1.1/salt/
-sudo nano /var/www/html/wordpress/wp-config.php
 
+wpsecure_key=$"(curl -s https://api.wordpress.org/secret-key/1.1/salt/)"
+WP_CONFIG_FILE=/var/www/html/wordpress/wp-config.php
+cat >'${WP_CONFIG_FILE}' <<EOF
+<?php
+/** The name of the database for WordPress */
+define( 'DB_NAME', '${wpdb}' );
+
+/** MySQL database username */
+define( 'DB_USER', '${wpuser}' );
+
+/** MySQL database password */
+define( 'DB_PASSWORD', '${password}' );
+
+/** MySQL hostname */
+define( 'DB_HOST', 'localhost' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+
+/**#@+
+${wpsecure_key}
+$table_prefix = 'wp_';
+define( 'WP_DEBUG', false );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+require_once ABSPATH . 'wp-settings.php';
+EOF
+sudo chown -R www-data:www-data '${WP_CONFIG_FILE}
 
 
 
