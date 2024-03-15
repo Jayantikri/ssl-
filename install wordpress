@@ -14,8 +14,9 @@ sudo apt install php libapache2-mod-php php-mysql -y
 echo "enter wordpress database"= "$wpdb"
 read $wpdb
 echo "enter wordpress_user name"=""$wpuser
+read $wpuser
 echo "enter password for user"="$password"
-
+read $password
 sudo mysql <<EOF
 CREATE DATABASE $wpdb DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 CREATE USER '$wpuser'@'%' IDENTIFIED WITH mysql_native_password BY '$password';
@@ -48,9 +49,6 @@ touch /tmp/wordpress/.htaccess
 sudo cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
 sudo mkdir /tmp/wordpress/wp-content/upgrade
 sudo cp -a /tmp/wordpress/. /var/www/html/wordpress
-sudo chown -R www-data:www-data /var/www/html/wordpress
-sudo find /var/www/html/wordpress/ -type d -exec chmod 770 {} \;
-sudo find /var/www/html/wordpress/ -type f -exec chmod 664 {} \;
 #setting wordpress config file
 
 wpsecure_key=$"(curl -s https://api.wordpress.org/secret-key/1.1/salt/)"
@@ -75,7 +73,6 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
-/**#@+
 ${wpsecure_key}
 $table_prefix = 'wp_';
 define( 'WP_DEBUG', false );
@@ -84,6 +81,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 require_once ABSPATH . 'wp-settings.php';
 EOF
+sudo chown -R www-data:www-data /var/www/html/wordpress
+sudo find /var/www/html/wordpress/ -type d -exec chmod 770 {} \;
+sudo find /var/www/html/wordpress/ -type f -exec chmod 664 {} \;
 sudo chown -R www-data:www-data '${WP_CONFIG_FILE}
 
 
