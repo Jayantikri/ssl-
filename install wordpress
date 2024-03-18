@@ -20,7 +20,7 @@ read $password
 sudo mysql <<EOF
 CREATE DATABASE $wpdb DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 CREATE USER '$wpuser'@'%' IDENTIFIED WITH mysql_native_password BY '$password';
-GRANT ALL ON $wpdb.* TO '$wordpressuser'@'%';
+GRANT ALL PRIVILEGES ON $wpdb.* TO '$wpuser'@'%';
 FLUSH PRIVILEGES;
 exit;
 EOF
