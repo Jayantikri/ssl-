@@ -53,10 +53,10 @@ sudo cp -a /tmp/wordpress/. /var/www/html/wordpress
 
 #setting wordpress config file
 
-wpsecure_key= "$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)"
-WP_CONFIG_FILE=/var/www/html/wordpress/wp-config.php
+wpsecure_key= $(curl -s https://api.wordpress.org/secret-key/1.1/salt/)
 
-cat >'${WP_CONFIG_FILE}' <<EOF
+
+cat > /var/www/html/wordpress/wp-config.php <<EOF
 <?php
 /** The name of the database for WordPress */
 define( 'DB_NAME', '${wpdb}' );
@@ -85,7 +85,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once ABSPATH . 'wp-settings.php';
 EOF
 sudo chown -R www-data:www-data /var/www/html/wordpress
-sudo chown -R www-data:www-data '${WP_CONFIG_FILE}'
 sudo find /var/www/html/wordpress/ -type d -exec chmod 770 {} \;
 sudo find /var/www/html/wordpress/ -type f -exec chmod 664 {} \;
 
