@@ -2,7 +2,7 @@
 #install dependencies
 
 ##installing apache
-sudo apt update 
+sudo apt update
 sudo apt install apache2 -y
 
 ##install mysql 
@@ -11,12 +11,13 @@ sudo apt install mysql-server -y
 ##installing php
 sudo apt install php libapache2-mod-php php-mysql -y
 ##configure wordpress user database
-echo "enter wordpress database"= "$wpdb"
-read $wpdb
+echo "enter wordpress_database"= "$wpdb"
+read wpdb
 echo "enter wordpress_user name"=""$wpuser
-read $wpuser
+read wpuser
 echo "enter password for user"="$password"
-read $password
+read password
+
 sudo mysql <<EOF
 CREATE DATABASE $wpdb DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 CREATE USER '$wpuser'@'%' IDENTIFIED WITH mysql_native_password BY '$password';
@@ -27,7 +28,6 @@ EOF
 
 ##installing additional php extensions---
 sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip -y
-
 cat > /etc/apache2/sites-available/wordpress.conf <<EOF
 <VirtualHost *:80>
     DocumentRoot /var/www/html/wordpress
@@ -39,6 +39,7 @@ EOF
 sudo apache2ctl configtest
 sudo systemctl reload apache2
 sudo a2enmod rewrite
+sudo a2ensite wordpress.conf
 
 #installing wordpress
 
@@ -49,10 +50,12 @@ touch /tmp/wordpress/.htaccess
 sudo cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
 sudo mkdir /tmp/wordpress/wp-content/upgrade
 sudo cp -a /tmp/wordpress/. /var/www/html/wordpress
+
 #setting wordpress config file
 
-wpsecure_key=$"(curl -s https://api.wordpress.org/secret-key/1.1/salt/)"
+wpsecure_key= "$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)"
 WP_CONFIG_FILE=/var/www/html/wordpress/wp-config.php
+
 cat >'${WP_CONFIG_FILE}' <<EOF
 <?php
 /** The name of the database for WordPress */
@@ -77,28 +80,14 @@ ${wpsecure_key}
 $table_prefix = 'wp_';
 define( 'WP_DEBUG', false );
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
+        define( 'ABSPATH', __DIR__ . '/' );
 }
 require_once ABSPATH . 'wp-settings.php';
 EOF
 sudo chown -R www-data:www-data /var/www/html/wordpress
+sudo chown -R www-data:www-data '${WP_CONFIG_FILE}'
 sudo find /var/www/html/wordpress/ -type d -exec chmod 770 {} \;
 sudo find /var/www/html/wordpress/ -type f -exec chmod 664 {} \;
-sudo chown -R www-data:www-data '${WP_CONFIG_FILE}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
