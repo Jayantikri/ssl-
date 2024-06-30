@@ -1,24 +1,27 @@
 ## ssl-
 ```
-first, check whether Apache status running or not
+first, check whether Apache status is running or not
 ```
-check whether the package is installed for SSL or not(OpenSSL)
+## check whether the package is installed for SSL or not(OpenSSL)
+```
+openssl version
+
 ```
 ## x509 for certificate
-the command for ssl certificate generation
+the command for ssl certificate generation with root user or user having sudo power
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/example.key -out /etc/ssl/certs/example.crt
 ```
 after running this command provide details if you want to 
 ```
-change directory     cd /etc/apache2/sites-available
+change directory     cd /etc/apache2/sites-available also add the ssl config to the site config file to enable ssl
 ```
 
 ## Check default ssl conf   
 ```
 SSLEngine on
 SSLCertificateFile      /etc/ssl/certs/example.crt
-                SSLCertificateKeyFile /etc/ssl/private/example.key
+SSLCertificateKeyFile  /etc/ssl/private/example.key
  ```
 
  ## for enabling this certificate
